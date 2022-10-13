@@ -1,0 +1,49 @@
+﻿@page "/fetchdata"
+
+<PageTitle>Fisk</PageTitle>
+
+@using BlazorHjemmeside_H1_SQL.Data
+
+
+<h1>Fisk</h1>
+
+
+
+@if (fisk == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fisk</th>
+                <th>Vægt. (KG)</th>
+                <th>Farve.</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var fisk in fisk)
+            {
+                <tr>
+                    <td>@fisk.Navn</td>
+                    <td>@fisk.Vægt</td>
+                    <td>@fisk.Farve</td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Fisk[]? fisk;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+}
