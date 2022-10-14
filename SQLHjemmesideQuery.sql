@@ -18,5 +18,9 @@ FiskFarve NVARCHAR(15)
 )
 
 INSERT INTO Fisk (FiskNavn,FiskVægt,FiskFarve)
-VALUES ('Nemo','5','Blå' )
+VALUES ('Nemo','5','Red' )
+INSERT INTO Fisk (FiskNavn,FiskVægt,FiskFarve)
+VALUES ('Dory','7','Blue' )
+INSERT INTO Fisk (FiskNavn,FiskVægt,FiskFarve)
+VALUES ('Catfish','7','Grey' )
 

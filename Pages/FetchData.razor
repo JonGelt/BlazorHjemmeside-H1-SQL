@@ -3,6 +3,7 @@
 <PageTitle>Fisk</PageTitle>
 
 @using BlazorHjemmeside_H1_SQL.Data
+@using H1AfsluttendeOpgaveSuperVigtig.Data
 
 
 <h1>Fisk</h1>
@@ -18,6 +19,7 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Fisk</th>
                 <th>Vægt. (KG)</th>
                 <th>Farve.</th>
@@ -25,9 +27,10 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var fisk in fisk)
+            @foreach (var fisk in fiskList)
             {
                 <tr>
+                    <th>@fisk.FiskID</th>
                     <td>@fisk.Navn</td>
                     <td>@fisk.Vægt</td>
                     <td>@fisk.Farve</td>
@@ -38,12 +41,23 @@ else
     </table>
 }
 
-@code {
-    private Fisk[]? fisk;
 
+  
+}
+
+@code {
+    Fisk fisk = new();
+    List<Fisk> fiskList = new SQL().ReadFisk();
+  
     protected override async Task OnInitializedAsync()
     {
-
+        
     }
-
+   
+    void AddItem()
+    {
+        //new SQL().CreateFish(fisk);
+        fisk = new();
+        fiskList = new SQL().ReadFisk();
+    }
 }

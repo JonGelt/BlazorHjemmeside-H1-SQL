@@ -1,99 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BlazorHjemmeside_H1_SQL.Data;
+using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics.Metrics;
 
-namespace BlazorHjemmeside_H1_SQL
+namespace H1AfsluttendeOpgaveSuperVigtig.Data
 {
-    public static class SQL
+    public class SQL
     {
-
-
-        private static string ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
-        public static bool SqlConnectionOK()
+        static string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=HjemmesideDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        SqlConnection conn = new SqlConnection(connectionString);
+        public List<Fisk> ReadFisk()
         {
-
-           
-
-            using (SqlConnection con = new SqlConnection(ConnectionString))
+            List<Fisk> FiskList = new List<Fisk>();
+            SqlCommand command = new SqlCommand("Select * from [Fisk]", conn);
+            conn.Open();
+            using (SqlDataReader reader = command.ExecuteReader())
             {
-                try
-                {
-                    con.Open();
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    return false;
-                }
-            }
-        }
-
-        // Create, Read, Update og Delete (CRUD)
-
-        //1) Create, Data der skal creates i en tabel (det hedder insert på sql'sk)
-        public static void insert(string sql)
-        {
-            using (SqlConnection con = new SqlConnection(ConnectionString))
-            {
-                con.Open();
-                SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        //2) Read, Data der skal læses fra en tabel (det hedder select på sql'sk)
-
-        //2a) DataAdapter og DataTable, returnere DataTable
-        public static DataTable ReadTable(string sql)
-        {
-            using (SqlConnection con = new SqlConnection(ConnectionString))
-            {
-                DataTable records = new DataTable();
-
-                //Create new DataAdapter
-                using (SqlDataAdapter a = new SqlDataAdapter(sql, con))
-                {
-                    //Use DataAdapter to fill DataTable records
-                    con.Open();
-                    a.Fill(records);
-                }
-
-                return records;
-            }
-        }
-
-        //2b) Read med Datareader, udskriver med Console.WriteLine()
-        public static void DataReader()
-        {
-            Console.WriteLine("DataReader");
-            using (SqlConnection con = new SqlConnection(ConnectionString))
-            {
-                con.Open();
-                SqlCommand cmd = new SqlCommand("Select * from Kunder", con);
-
-                SqlDataReader reader = cmd.ExecuteReader();
-                //Er der rækker?
-                Console.WriteLine(reader.HasRows);
 
                 while (reader.Read())
                 {
-                    int id = reader.GetInt32(0);
-                    string navn = reader.GetString(1);
-                    string adr = reader.GetString(2);
-                    int alder = reader.GetInt32(3);
-
-                    Console.WriteLine($"Id: {id} navn: {navn} adresse: {adr} - alder: {alder}");
+                    Fisk f = new()
+                    {
+                    
+                        FiskID = int.Parse(reader["fiskid"].ToString()),
+                        Navn = reader["fisknavn"].ToString(),
+                        Farve = reader["fiskfarve"].ToString(),
+                        Vægt = double.Parse(reader["fiskvægt"].ToString()),
+                        
+                    };
+                    FiskList.Add(f);
                 }
-
             }
+            conn.Close();
+            return FiskList;
         }
 
+        public bool CreateFisk(Fisk f)
+        {
+            using (conn)
+            {
+                var cmd = new SqlCommand(
+                    "INSERT INTO [Fisk] " +
+                    "VALUES (@navn, @farve, @vægt)", conn);
+                cmd.Parameters.Add("@navn", SqlDbType.NVarChar).Value = f.Navn;
+                cmd.Parameters.Add("@farve", SqlDbType.NVarChar).Value = f.Farve;
+                cmd.Parameters.Add("@vægt", SqlDbType.Decimal).Value = f.Vægt;
+                conn.Open();
+                if (cmd.ExecuteNonQuery() == 1) return true; else return false;
+            }
+        }
 
     }
 }
